@@ -2,6 +2,10 @@
 Asistente Técnico con Deepseek y RAG (Documentos)
 ==================================================
 
+Prompt
+-----------
+Por favor ayudame, necesito crear un asistente de tecnologia , en donde yo pueda enseñarle los documetos que tenemos y el vaya aprendiendo de estos, cuando le realicen preguntas que sus respuestas sean en base a los documentos que le hemos enseñado, preferiblemente que este asistente sea con deepseek. Por favor el formato en rst
+
 Objetivo
 --------
 Crear un asistente que:
