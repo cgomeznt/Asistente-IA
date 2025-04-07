@@ -115,6 +115,7 @@ Paso 4: Inicialización del Sistema
 ----------------------------
 
 Primer arranque (carga inicial):
+
 .. code-block:: bash
 
    # Iniciar el contenedor
@@ -124,6 +125,7 @@ Primer arranque (carga inicial):
    docker exec -it asistente_docker python /app/main.py --cargar
 
 Verificar logs:
+
 .. code-block:: bash
 
    docker logs -f asistente_docker
@@ -133,6 +135,7 @@ Paso 5: Uso del Asistente
 ----------------------------
 
 Consulta vía API::
+
 .. code-block:: bash
 
    curl -X POST "http://localhost:8000/preguntar" \
@@ -140,6 +143,7 @@ Consulta vía API::
    -d '{"pregunta": "¿Cómo configurar alertas en Zabbix?"}'
 
 Respuesta esperada::
+
 .. code-block:: json
 
    {
