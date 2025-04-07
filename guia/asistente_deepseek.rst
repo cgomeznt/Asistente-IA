@@ -212,20 +212,20 @@ Mejoras Adicionales
 Flujo de Trabajo Recomendado:
 ---------------------------------
 
-Primera ejecución:
+Primera ejecución::
 
-..  mkdir documentos
-  cp manuales/*.pdf documentos/
-  python asistente.py
+   mkdir documentos
+   cp manuales/*.pdf documentos/
+   python asistente.py
 
 
-Ejemplo de interacción:
+Ejemplo de interacción::
 
-.. ¿Cuál es el puerto por defecto de Zabbix?
-  Respuesta: Según la documentación técnica (v7.2), Zabbix utiliza el puerto 10051 para...
-  Fuentes: ['documentos/zabbix_manual.pdf', 'documentos/redes.docx']
+   ¿Cuál es el puerto por defecto de Zabbix?
+   Respuesta: Según la documentación técnica (v7.2), Zabbix utiliza el puerto 10051 para...
+   Fuentes: ['documentos/zabbix_manual.pdf', 'documentos/redes.docx']
 
-Para producción:
-
-.. docker build -t asistente-tecnico .
-  docker run -p 8000:8000 -e DEEPSEEK_API_KEY=tu_key asistente-tecnico
+Para producción::
+   
+   docker build -t asistente-tecnico .
+   docker run -p 8000:8000 -e DEEPSEEK_API_KEY=tu_key asistente-tecnico
