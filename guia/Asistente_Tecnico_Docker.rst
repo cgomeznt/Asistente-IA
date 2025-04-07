@@ -92,12 +92,12 @@ docker-compose.yml
 Paso 3: Construcción del Contenedor
 ----------------------------
 
-1. Construir la imagen:
+1. Construir la imagen::
 .. code-block:: bash
 
    docker-compose build
 
-2. Verificar la creación:
+2. Verificar la creación::
 .. code-block:: bash
 
    docker images | grep asistente
@@ -130,14 +130,14 @@ Verificar logs:
 Paso 5: Uso del Asistente
 ----------------------------
 
-Consulta vía API:
+Consulta vía API::
 .. code-block:: bash
 
    curl -X POST "http://localhost:8000/preguntar" \
    -H "Content-Type: application/json" \
    -d '{"pregunta": "¿Cómo configurar alertas en Zabbix?"}'
 
-Respuesta esperada:
+Respuesta esperada::
 .. code-block:: json
 
    {
