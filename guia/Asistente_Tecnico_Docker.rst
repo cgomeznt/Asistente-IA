@@ -206,29 +206,34 @@ Solución de Problemas Comunes
 +--------------------------------+-----------------------------------------------+
 | Error                          | Solución                                      |
 +================================+===============================================+
-| "Address already in use"       | Cambiar puerto en docker-compose.yml         |
+| "Address already in use"       | Cambiar puerto en docker-compose.yml          |
 +--------------------------------+-----------------------------------------------+
-| "ModuleNotFoundError"          | Reconstruir imagen con --no-cache           |
+| "ModuleNotFoundError"          | Reconstruir imagen con --no-cache             |
 +--------------------------------+-----------------------------------------------+
-| Permisos denegados en volumen  | Ejecutar: ``chmod -R 777 ./app/documentos`` |
+| Permisos denegados en volumen  | Ejecutar: ``chmod -R 777 ./app/documentos``   |
 +--------------------------------+-----------------------------------------------+
-| "CUDA out of memory"           | Limitar uso de GPU en docker-compose.yml    |
+| "CUDA out of memory"           | Limitar uso de GPU en docker-compose.yml      |
 +--------------------------------+-----------------------------------------------+
+
 
 Comandos clave para gestión diaria:
 ----------------------------------
 
-# Detener el contenedor
-docker-compose down
+# Detener el contenedor::
 
-# Actualizar la imagen (tras cambios en código)
-docker-compose up -d --build
+   docker-compose down
 
-# Borrar cache de embeddings
-docker exec asistente_docker rm -rf /app/vector_db/*
+# Actualizar la imagen (tras cambios en código)::
 
-# Ver espacio utilizado
-docker system df
+   docker-compose up -d --build
+
+# Borrar cache de embeddings::
+
+   docker exec asistente_docker rm -rf /app/vector_db/*
+
+# Ver espacio utilizado::
+
+   docker system df
 
 Recomendaciones para producción:
 ---------------------------------------
