@@ -214,3 +214,27 @@ Solución de Problemas Comunes
 +--------------------------------+-----------------------------------------------+
 | "CUDA out of memory"           | Limitar uso de GPU en docker-compose.yml    |
 +--------------------------------+-----------------------------------------------+
+
+Comandos clave para gestión diaria:
+----------------------------------
+
+# Detener el contenedor
+docker-compose down
+
+# Actualizar la imagen (tras cambios en código)
+docker-compose up -d --build
+
+# Borrar cache de embeddings
+docker exec asistente_docker rm -rf /app/vector_db/*
+
+# Ver espacio utilizado
+docker system df
+
+Recomendaciones para producción:
+---------------------------------------
+
+Usar un proxy inverso (Nginx) delante del contenedor
+
+Implementar autenticación JWT para la API
+
+Configurar backups periódicos del volumen vector_db
