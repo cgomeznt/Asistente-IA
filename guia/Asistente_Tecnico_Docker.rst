@@ -92,12 +92,14 @@ docker-compose.yml
 Paso 3: Construcción del Contenedor
 ----------------------------
 
-1. Construir la imagen::
+1. Construir la imagen:
+
 .. code-block:: bash
 
    docker-compose build
 
-2. Verificar la creación::
+2. Verificar la creación:
+
 .. code-block:: bash
 
    docker images | grep asistente
