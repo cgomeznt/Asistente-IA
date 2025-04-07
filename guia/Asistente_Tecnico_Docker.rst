@@ -134,7 +134,7 @@ Verificar logs:
 Paso 5: Uso del Asistente
 ----------------------------
 
-Consulta vía API::
+Consulta vía API:
 
 .. code-block:: bash
 
@@ -142,7 +142,7 @@ Consulta vía API::
    -H "Content-Type: application/json" \
    -d '{"pregunta": "¿Cómo configurar alertas en Zabbix?"}'
 
-Respuesta esperada::
+Respuesta esperada:
 
 .. code-block:: json
 
