@@ -157,16 +157,19 @@ Paso 6: Mantenimiento
 
 Actualización de documentos:
 1. Copiar nuevos archivos al directorio local:
+
 .. code-block:: bash
 
    cp nuevo_documento.pdf ./app/documentos/
 
 2. Reindexar contenido:
+
 .. code-block:: bash
 
    docker exec asistente_docker python /app/main.py --actualizar
 
 Monitorización:
+
 .. code-block:: bash
 
    # Ver uso de recursos
@@ -182,6 +185,7 @@ Configuraciones Avanzadas
 Optimización de la Imagen
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Añadir al Dockerfile:
+
 .. code-block:: dockerfile
 
    # Multi-stage build
@@ -195,11 +199,13 @@ Añadir al Dockerfile:
 Variables de Entorno Seguras
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. Crear archivo ``.env`` en host:
+
 .. code-block:: ini
 
    DEEPSEEK_API_KEY=tu_api_key_real
 
 2. Modificar docker-compose.yml:
+
 .. code-block:: yaml
 
    env_file:
