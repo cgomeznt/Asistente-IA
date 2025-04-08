@@ -1,6 +1,10 @@
 ==================================================
-Asistente Tecnológico con Deepseek y Búsqueda en Documentos
+Asistente Tecnológico con Deepseek y Búsqueda dentro de los Documentos
 ==================================================
+
+Prompt
+------------
+Por favor ayudame, necesito crear un asistente de tecnologia , en donde yo pueda enseñarle los documetos que tenemos y el vaya aprendiendo de estos, cuando le realicen preguntas que sus respuestas que las obtenga de los documentos que le hemos enseñado, preferiblemente que este asistente sea con deepseek. No quiero que solo me diga el nombre del documento, quiero que sea capaz de buscar dentro de los documentos y dar la respuesta. Por favor el formato en rst
 
 Objetivo
 --------
@@ -279,7 +283,29 @@ Solución de Problemas Comunes
 +--------------------------------+-----------------------------------------------+
 | "Empty document content"       | Verificar permisos de lectura en archivos    |
 +--------------------------------+-----------------------------------------------+
-| "Low relevance scores"         | Ajustar CHUNK_SIZE y CHUNK_OVERLAP          |
+| "Low relevance scores"         | Ajustar CHUNK_SIZE y CHUNK_OVERLAP            |
 +--------------------------------+-----------------------------------------------+
-| "API timeout"                  | Implementar retry con backoff exponencial    |
+| "API timeout"                  | Implementar retry con backoff exponencial     |
 +--------------------------------+-----------------------------------------------+
+
+Características Clave:
+-----------------------
+
+Extracción Precisa: Identifica páginas y fragmentos exactos en los documentos
+
+Citas Automáticas: Incluye referencias documentales en cada respuesta
+
+Umbral de Relevancia: Filtra resultados con score < 0.7 para evitar información no relacionada
+
+Contexto Enriquecido: Proporciona el fragmento documental usado para generar la respuesta
+
+Recomendaciones para Producción:
+----------------------------------
+
+Implementar caché con Redis para fragmentos documentales frecuentes
+
+Añadir autenticación JWT para el endpoint /ask
+
+Configurar monitoreo del consumo de la API de Deepseek
+
+Programar reindexación automática cada 24 horas para nuevos documentos
