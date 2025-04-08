@@ -253,6 +253,7 @@ Actualización de Documentos
 Optimización de Búsqueda
 ^^^^^^^^^^^^^^^^^^^^^^^^
 1. Filtrado por tipo de documento:
+
 .. code-block:: python
 
    vectordb.similarity_search(
@@ -261,6 +262,7 @@ Optimización de Búsqueda
    )
 
 2. Búsqueda híbrida (semántica + keywords):
+
 .. code-block:: python
 
    from langchain.retrievers import BM25Retriever
@@ -276,17 +278,17 @@ Optimización de Búsqueda
 Solución de Problemas Comunes
 --------------------------------
 
-+--------------------------------+-----------------------------------------------+
-| Error                          | Solución                                      |
-+================================+===============================================+
++--------------------------------+-----------------------------------------------------------+
+| Error                          | Solución                                                  |
++================================+===========================================================+
 | "Unsupported file type"        | Instalar: ``pip install "unstructured[local-inference]"`` |
-+--------------------------------+-----------------------------------------------+
-| "Empty document content"       | Verificar permisos de lectura en archivos    |
-+--------------------------------+-----------------------------------------------+
-| "Low relevance scores"         | Ajustar CHUNK_SIZE y CHUNK_OVERLAP            |
-+--------------------------------+-----------------------------------------------+
-| "API timeout"                  | Implementar retry con backoff exponencial     |
-+--------------------------------+-----------------------------------------------+
++--------------------------------+-----------------------------------------------------------+
+| "Empty document content"       | Verificar permisos de lectura en archivos                 |
++--------------------------------+-----------------------------------------------------------+
+| "Low relevance scores"         | Ajustar CHUNK_SIZE y CHUNK_OVERLAP                        |
++--------------------------------+-----------------------------------------------------------+
+| "API timeout"                  | Implementar retry con backoff exponencial                 |
++--------------------------------+-----------------------------------------------------------+
 
 Características Clave:
 -----------------------
