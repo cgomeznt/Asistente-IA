@@ -36,7 +36,7 @@ Paso 1: Configuración Docker
     RUN apt-get update && \
         apt-get install -y \
         grep \
-        awk \
+        gawk \
         sed \
         python3 \
         python3-pip \
@@ -150,7 +150,7 @@ Paso 4: Despliegue
 
 .. code-block:: bash
 
-    docker-compose run asistente /app/scripts/indexador.sh
+    docker compose run asistente /app/scripts/indexador.sh
 
 3. Iniciar el servicio:
 
@@ -162,7 +162,7 @@ Paso 4: Despliegue
 
 .. code-block:: bash
 
-    docker-compose exec asistente /app/scripts/buscador.sh
+    docker compose exec asistente /app/scripts/buscador.sh
 
 Características Clave
 ---------------------
@@ -185,12 +185,12 @@ Actualización de Documentos
 
 .. code-block:: bash
 
-    docker-compose down
+    docker compose down
 
 2. Actualizar documentos en `/documentos`
 3. Reindexar:
 
 .. code-block:: bash
 
-    docker-compose run asistente /app/scripts/indexador.sh
-    docker-compose up -d
+    docker compose run asistente /app/scripts/indexador.sh
+    docker compose up -d
