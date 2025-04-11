@@ -255,5 +255,5 @@ Haz preguntas:
 .. code-block:: bash
 
    curl -X POST -H "Content-Type: application/json" -d '{
-  "question": "Qui es Carlos Gomez?"
-}' http://localhost:8000/ask/
+   "question": "Qui es Carlos Gomez?"
+   }' http://localhost:8000/ask/
