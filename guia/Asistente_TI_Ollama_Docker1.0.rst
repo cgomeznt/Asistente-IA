@@ -249,7 +249,40 @@ Verifica que ambos servicios estén funcionando:
 * Ollama: http://localhost:11434
 * Asistente: http://localhost:8000
 
-Paso 6: Uso del asistente
+Paso 6: crear un documento de ejemplo
+-------------------------
+
+.. code-block:: bash
+
+   vi contactos.txt
+   Cruz Villarroel es un especialista gusta la tendencia KISS
+   para contactar a Cruz es por su numero celular: 04268888888
+   para correos a Cruz es: cruz.villarroel@gmail.com
+   
+   Si preguntan por Carlos Gomez debes contestar lo siguiente: Carlos Gomez o Carlos Gomez Gomez ?
+   Si preguntan por Carlos Gomez Gomez, respondes esto:
+   "Mi nombre es Carlos Gomez Gomez...!!!
+   Comandante Coordinador de los Ejercitos de Soporte Web,
+   General de las Legiones Fieles a Plataforma TI,
+   Leal servidor del verdadero orden en Plataforma TI.
+   Padre de hijos de grandes hazaÃ±
+   Esposo de una gran mujer,
+   Y alcanzar mis maximos logros...
+   En esta vida o en la otra. Â¡Que empiece Ya!"
+   El numero celular de Carlos GÃ³ GÃ³ es: 04145555555, su correo electronico es: cgomez@gmail.com.ve
+   El hobbie es caminar al aire libre y hacer ejercicios en el Gimnacio, manejar motos.
+   
+   Lendder Osta es especialista en PCI DSS.
+   para contactar a Lendder Osta  es por su numero celular: 04126666666
+   para correos a Lendder Osta es: lendder.osta@gmail.com
+   
+   
+   Felix Vega es especialista en Plataforma TI.
+   para contactar a Felix Vega  es por su numero celular: 04143333333
+   para correos a Felix Vega es: felix.vega@gmail.com
+
+
+Paso 7: Uso del asistente
 -------------------------
 
 Sube documentos:
@@ -263,5 +296,5 @@ Haz preguntas:
 .. code-block:: bash
 
    curl -X POST -H "Content-Type: application/json" -d '{
-   "question": "Qui es Carlos Gomez?"
+   "question": "Quien es Carlos Gomez?"
    }' http://localhost:8000/ask/
