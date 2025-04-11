@@ -20,10 +20,10 @@ Estructura Final del Proyecto
    ├── Dockerfile
    ├── requirements.txt
    ├── app.py
-   ├── static/
+   ├── static/      (opcional)
    │   └── index.html
-   ├── uploads/
-   ├── db/
+   ├── uploads/   (creado automáticamente)
+   ├── db/         (creado automáticamente)
    └── docs/
        └── contactos.txt
 
