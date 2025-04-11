@@ -72,15 +72,26 @@ Crea un Dockerfile para tu aplicación:
 .. code-block:: dockerfile
 
    FROM python:3.9-slim
-
+   
    WORKDIR /app
-
+   
+   # Instalar dependencias del sistema
+   RUN apt-get update && \
+       apt-get install -y \
+       tesseract-ocr \
+       poppler-utils \
+       libmagic-dev \
+       && rm -rf /var/lib/apt/lists/*
+   
+   # Instalar dependencias Python
    COPY requirements.txt .
+   RUN pip install --upgrade pip
    RUN pip install --no-cache-dir -r requirements.txt
-
+   
    COPY . .
-
-   CMD ["python", "app.py"]
+   
+   EXPOSE 8000
+   CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 Crea un archivo requirements.txt:
 
@@ -90,12 +101,16 @@ Crea un archivo requirements.txt:
    uvicorn
    python-multipart
    langchain
+   langchain-community
+   langchain-huggingface
    sentence-transformers
    unstructured
    pdf2image
    pytesseract
    pymupdf
    chromadb
+   ollama
+
 
 Crea un archivo app.py con el siguiente contenido inicial:
 
@@ -107,9 +122,16 @@ Crea un archivo app.py con el siguiente contenido inicial:
    from typing import List
    from pydantic import BaseModel
    import ollama
-
+   # AÃ± estas importaciones al inicio del archivo
+   from langchain.document_loaders import DirectoryLoader
+   from langchain.text_splitter import RecursiveCharacterTextSplitter
+   from langchain.embeddings import HuggingFaceEmbeddings
+   from langchain.vectorstores import Chroma
+   from langchain.chains import RetrievalQA
+   import os
+   
    app = FastAPI()
-
+   
    app.add_middleware(
        CORSMiddleware,
        allow_origins=["*"],
@@ -117,42 +139,81 @@ Crea un archivo app.py con el siguiente contenido inicial:
        allow_methods=["*"],
        allow_headers=["*"],
    )
-
+   
    class Question(BaseModel):
        question: str
-
+   
+   # ConfiguraciÃ³e embeddings
+   embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+   
+   # ConfiguraciÃ³el procesamiento de documentos
+   def process_documents():
+       loader = DirectoryLoader('uploads/', glob="**/*.*")
+       documents = loader.load()
+   
+       text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+       texts = text_splitter.split_documents(documents)
+   
+       # Crear y persistir la base de datos vectorial
+       db = Chroma.from_documents(texts, embeddings, persist_directory="db")
+       db.persist()
+       return db
+   
+   # Modifica la funciÃ³pload_file
    @app.post("/upload/")
    async def upload_file(file: UploadFile = File(...)):
        try:
+           os.makedirs("uploads", exist_ok=True)
            contents = await file.read()
            with open(f"uploads/{file.filename}", "wb") as f:
                f.write(contents)
-           
-           # Aquí iría el procesamiento del documento
-           return {"filename": file.filename, "message": "File uploaded successfully"}
+   
+           # Procesar el documento
+           process_documents()
+           return {"filename": file.filename, "message": "File uploaded and processed successfully"}
        except Exception as e:
            raise HTTPException(status_code=500, detail=str(e))
-
+   
+   # Modifica la funciÃ³sk_question para usar RAG
    @app.post("/ask/")
    async def ask_question(question: Question):
        try:
+           # Cargar la base de datos vectorial
+           db = Chroma(persist_directory="db", embedding_function=embeddings)
+           retriever = db.as_retriever()
+   
+           # Obtener documentos relevantes
+           docs = retriever.get_relevant_documents(question.question)
+           context = "\n\n".join([doc.page_content for doc in docs])
+   
+           # Crear prompt con contexto
+           prompt = f"""
+           Basado en el siguiente contexto, responde la pregunta.
+           Contexto: {context}
+           Pregunta: {question.question}
+           Respuesta:
+           """
+   
            response = ollama.chat(
                model='llama3',
                messages=[{
                    'role': 'user',
-                   'content': question.question,
+                   'content': prompt,
                }]
            )
            return {"answer": response['message']['content']}
        except Exception as e:
            raise HTTPException(status_code=500, detail=str(e))
-
+   
    if __name__ == "__main__":
        import uvicorn
        uvicorn.run(app, host="0.0.0.0", port=8000)
 
+
 Paso 5: Configuración del sistema RAG (Retrieval-Augmented Generation)
 ---------------------------------------------------------------------
+
+Esto ya esta integrado en el punto 4:
 
 Modifica el app.py para incluir procesamiento de documentos:
 
@@ -228,41 +289,8 @@ Modifica el app.py para incluir procesamiento de documentos:
        except Exception as e:
            raise HTTPException(status_code=500, detail=str(e))
 
-Paso 6: Configuración del docker-compose.yml
--------------------------------------------
 
-Crea un archivo docker-compose.yml:
-
-.. code-block:: yaml
-
-   version: '3.8'
-
-   services:
-     ollama:
-       image: ollama/ollama
-       ports:
-         - "11434:11434"
-       volumes:
-         - ollama_data:/root/.ollama
-       restart: unless-stopped
-
-     assistant:
-       build: .
-       ports:
-         - "8000:8000"
-       volumes:
-         - ./uploads:/app/uploads
-         - ./db:/app/db
-       depends_on:
-         - ollama
-       environment:
-         - OLLAMA_HOST=http://ollama:11434
-       restart: unless-stopped
-
-   volumes:
-     ollama_data:
-
-Paso 7: Construir y ejecutar el sistema
+Paso 6: Construir y ejecutar el sistema
 ---------------------------------------
 
 Construye y levanta los contenedores:
@@ -276,7 +304,7 @@ Verifica que ambos servicios estén funcionando:
 * Ollama: http://localhost:11434
 * Asistente: http://localhost:8000
 
-Paso 8: Uso del asistente
+Paso 7: Uso del asistente
 -------------------------
 
 Sube documentos:
