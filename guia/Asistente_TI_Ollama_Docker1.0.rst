@@ -10,6 +10,23 @@ Requisitos Previos
 * Conocimientos básicos de línea de comandos
 * Al menos 8GB de RAM disponibles (16GB recomendado para mejores resultados)
 
+Estructura Final del Proyecto
+---------------------------
+
+::
+
+   ollama-assistant/
+   ├── docker-compose.yml
+   ├── Dockerfile
+   ├── requirements.txt
+   ├── app.py
+   ├── static/
+   │   └── index.html
+   ├── uploads/
+   ├── db/
+   └── docs/
+       └── contactos.txt
+
 Paso 1: Configuración inicial de Docker
 ---------------------------------------
 
