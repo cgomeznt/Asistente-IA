@@ -112,7 +112,7 @@ Crea un archivo requirements.txt:
    ollama
 
 
-Crea un archivo app.py con el siguiente contenido inicial:
+Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
 
 .. code-block:: python
 
@@ -210,87 +210,7 @@ Crea un archivo app.py con el siguiente contenido inicial:
        uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
-Paso 5: Configuración del sistema RAG (Retrieval-Augmented Generation)
----------------------------------------------------------------------
-
-Esto ya esta integrado en el punto 4:
-
-Modifica el app.py para incluir procesamiento de documentos:
-
-.. code-block:: python
-
-   # Añade estas importaciones al inicio del archivo
-   from langchain.document_loaders import DirectoryLoader
-   from langchain.text_splitter import RecursiveCharacterTextSplitter
-   from langchain.embeddings import HuggingFaceEmbeddings
-   from langchain.vectorstores import Chroma
-   from langchain.chains import RetrievalQA
-   import os
-
-   # Configuración de embeddings
-   embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-   # Configuración del procesamiento de documentos
-   def process_documents():
-       loader = DirectoryLoader('uploads/', glob="**/*.*")
-       documents = loader.load()
-       
-       text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-       texts = text_splitter.split_documents(documents)
-       
-       # Crear y persistir la base de datos vectorial
-       db = Chroma.from_documents(texts, embeddings, persist_directory="db")
-       db.persist()
-       return db
-
-   # Modifica la función upload_file
-   @app.post("/upload/")
-   async def upload_file(file: UploadFile = File(...)):
-       try:
-           os.makedirs("uploads", exist_ok=True)
-           contents = await file.read()
-           with open(f"uploads/{file.filename}", "wb") as f:
-               f.write(contents)
-           
-           # Procesar el documento
-           process_documents()
-           return {"filename": file.filename, "message": "File uploaded and processed successfully"}
-       except Exception as e:
-           raise HTTPException(status_code=500, detail=str(e))
-
-   # Modifica la función ask_question para usar RAG
-   @app.post("/ask/")
-   async def ask_question(question: Question):
-       try:
-           # Cargar la base de datos vectorial
-           db = Chroma(persist_directory="db", embedding_function=embeddings)
-           retriever = db.as_retriever()
-           
-           # Obtener documentos relevantes
-           docs = retriever.get_relevant_documents(question.question)
-           context = "\n\n".join([doc.page_content for doc in docs])
-           
-           # Crear prompt con contexto
-           prompt = f"""
-           Basado en el siguiente contexto, responde la pregunta.
-           Contexto: {context}
-           Pregunta: {question.question}
-           Respuesta:
-           """
-           
-           response = ollama.chat(
-               model='llama3',
-               messages=[{
-                   'role': 'user',
-                   'content': prompt,
-               }]
-           )
-           return {"answer": response['message']['content']}
-       except Exception as e:
-           raise HTTPException(status_code=500, detail=str(e))
-
-
-Paso 6: Construir y ejecutar el sistema
+Paso 5: Construir y ejecutar el sistema
 ---------------------------------------
 
 Construye y levanta los contenedores:
@@ -304,7 +224,7 @@ Verifica que ambos servicios estén funcionando:
 * Ollama: http://localhost:11434
 * Asistente: http://localhost:8000
 
-Paso 7: Uso del asistente
+Paso 6: Uso del asistente
 -------------------------
 
 Sube documentos:
