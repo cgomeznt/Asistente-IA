@@ -234,7 +234,15 @@ Construye y levanta los contenedores:
 
 .. code-block:: bash
 
-   docker-compose up --build
+   docker compose up --build
+
+Tambien se puede construir y levanta los contenedores así:
+
+.. code-block:: bash
+
+   docker compose build
+
+   docker compose up
 
 Verifica que ambos servicios estén funcionando:
 
