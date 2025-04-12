@@ -124,10 +124,42 @@ Crea un Dockerfile para tu aplicación:
    
    #CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
+Crear el archivo docker-compose.yml:
+
+.. code-block:: docker-compose.yml
+
+   version: '3.8'
+   
+   services:
+     ollama:
+       image: ollama/ollama
+       ports:
+         - "11434:11434"
+       volumes:
+         - ollama_data:/root/.ollama
+       restart: unless-stopped
+   
+     assistant:
+       build: .
+       ports:
+         - "8000:8000"
+         - "80:80"
+       volumes:
+         - ./uploads:/app/uploads
+         - ./db:/app/db
+       depends_on:
+         - ollama
+       environment:
+         - OLLAMA_HOST=http://ollama:11434
+       restart: unless-stopped
+   
+   volumes:
+     ollama_data:
+
 
 Crea un archivo requirements.txt:
 
-.. code-block:: text
+.. code-block:: requirements.txt
 
    fastapi
    uvicorn
@@ -641,78 +673,7 @@ El archivo nginx.conf:
        }
    }
 
-El archivo Dockerfile:
 
-.. code-block:: bash
-
-   FROM python:3.9-slim
-   
-   WORKDIR /app
-   
-   # Instalar dependencias del sistema
-   RUN apt-get update && \
-       apt-get install -y \
-       tesseract-ocr \
-       poppler-utils \
-       libmagic-dev \
-       && rm -rf /var/lib/apt/lists/*
-   
-   # Instalar dependencias Python
-   COPY requirements.txt .
-   RUN pip install --upgrade pip
-   #RUN pip install --no-cache-dir -r requirements.txt
-   RUN pip install -r requirements.txt
-   
-   COPY . .
-   
-   # Instalar un servidor web simple para servir el index.html
-   RUN apt-get update && apt-get install -y nginx && \
-       rm -rf /var/lib/apt/lists/* && \
-       mv index.html /var/www/html/
-   
-   # Configurar Nginx para servir la interfaz y redirigir API a FastAPI
-   COPY nginx.conf /etc/nginx/nginx.conf
-   
-   RUN chown -R www-data:www-data /var/www/html && \
-       chmod -R 755 /var/www/html
-   
-   # Puerto para FastAPI (8000) y para Nginx (80)
-   EXPOSE 8000 80
-   
-   #CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-   CMD service nginx start && uvicorn app:app --host 0.0.0.0 --port 8000
-
-El archivo docker-compose.yml:
-
-.. code-block:: bash
-
-   version: '3.8'
-   
-   services:
-     ollama:
-       image: ollama/ollama
-       ports:
-         - "11434:11434"
-       volumes:
-         - ollama_data:/root/.ollama
-       restart: unless-stopped
-   
-     assistant:
-       build: .
-       ports:
-         - "8000:8000"
-         - "80:80"
-       volumes:
-         - ./uploads:/app/uploads
-         - ./db:/app/db
-       depends_on:
-         - ollama
-       environment:
-         - OLLAMA_HOST=http://ollama:11434
-       restart: unless-stopped
-   
-   volumes:
-     ollama_data:
 
 
 
