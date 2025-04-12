@@ -459,7 +459,7 @@ Archivo index.html:
                <div class="section">
                    <h2 class="section-title">Realizar Consulta</h2>
                    <textarea id="questionInput" rows="4" placeholder="Escribe tu pregunta tÃ©ica aquÃ­."></textarea>
-                   <button onclick="askQuestion()">Enviar Pregunta</button>
+                   <button id="askButton">Enviar Pregunta</button>
                    <div id="response"></div>
                </div>
            </div>
@@ -476,7 +476,9 @@ Archivo index.html:
        </div>
    
        <script>
-           // FunciÃ³ara cambiar entre pestaÃ±        function openTab(evt, tabName) {
+           // FunciÃ³ara cambiar entre pestaÃ±        f
+   
+               function openTab(evt, tabName) {
                var i, tabcontent, tablinks;
    
                tabcontent = document.getElementsByClassName("tabcontent");
@@ -491,7 +493,7 @@ Archivo index.html:
    
                document.getElementById(tabName).classList.add("active-tab");
                evt.currentTarget.className += " active";
-           }
+               }
    
            // FunciÃ³ara enviar pregunta al backend
            async function askQuestion() {
@@ -506,7 +508,7 @@ Archivo index.html:
                responseDiv.innerHTML = "Procesando tu pregunta...";
    
                try {
-                   const response = await fetch('http://localhost:8000/ask/', {
+                   const response = await fetch('http://localhost:8000/ask', {
                        method: 'POST',
                        headers: {
                            'Content-Type': 'application/json',
@@ -543,7 +545,7 @@ Archivo index.html:
                        formData.append('file', fileInput.files[i]);
                    }
    
-                   const response = await fetch('http://localhost:8000/upload/', {
+                   const response = await fetch('http://10.134.3.35:8000/upload', {
                        method: 'POST',
                        body: formData
                    });
@@ -562,8 +564,41 @@ Archivo index.html:
                }
            }
        </script>
+   <script>
+       document.getElementById('askButton').addEventListener('click', async function() {
+           const question = document.getElementById('questionInput').value;
+           const responseDiv = document.getElementById('response');
+   
+           if (!question) {
+               responseDiv.innerHTML = "Por favor, escribe una pregunta.";
+               return;
+           }
+   
+           responseDiv.innerHTML = "Procesando tu pregunta...";
+   
+           try {
+              const response = await fetch('http://10.134.3.35:8000/ask', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ question: question })
+               });
+   
+               if (!response.ok) {
+                   throw new Error(`Error: ${response.status}`);
+               }
+   
+               const data = await response.json();
+               responseDiv.innerHTML = data.answer;
+           } catch (error) {
+               responseDiv.innerHTML = `Error: ${error.message}`;
+           }
+       });
+   </script>
    </body>
    </html>
+
 
 Configuraciones para el Nginx
 --------------------------------
