@@ -652,11 +652,13 @@ Verifica que ambos servicios estén funcionando:
 Paso 6: Uso del asistente
 -------------------------
 
-Sube documentos:
+Subir documentos:
 
 .. code-block:: bash
 
    curl -X POST -F "file=@contactos.txt" http://localhost:8000/upload
+
+NOTA: Cada vez que se haga la carga de documentos se debe reiniciar el Aistente TI
 
 Haz preguntas:
 
@@ -671,6 +673,54 @@ Ir a un navegador y colocar la URL:
 http://localhost/
 
 
+.. _ollama-desventajas-servidor:
 
+Desventajas del Asistente de TI con Ollama en el Rendimiento del Servidor
+=========================================================================
+
+Consumo de Recursos Elevado
+---------------------------
+- **CPU y RAM**: Ollama (con modelos como LLaMA 2 o Mistral) consume grandes cantidades de CPU y RAM, afectando el rendimiento en servidores no dimensionados adecuadamente.
+- **GPU**: En aceleración por GPU (CUDA/Metal), modelos grandes pueden saturar la VRAM, causando lentitud o cierres inesperados.
+
+Latencia en Respuestas
+----------------------
+- Los modelos LLM generan respuestas con alta latencia, especialmente en servidores con recursos limitados o múltiples consultas concurrentes.
+
+Escalabilidad Limitada
+----------------------
+- Diseñado para entornos locales o pequeños. No soporta bien múltiples usuarios simultáneos sin configuración adicional (balanceo de carga, clusters).
+
+Uso de Almacenamiento
+---------------------
+- Los modelos descargados ocupan espacio significativo (ej: LLaMA 2 7B ≈4GB, versiones mayores >20GB), problemático en servidores con SSD/HDD limitados.
+
+Falta de Optimización para Producción
+-------------------------------------
+- Inadecuado para entornos de alto tráfico. Carece de:
+  - Cache de respuestas.
+  - Rate limiting.
+  - Balanceo automático de carga.
+
+Dependencia de la Conexión (Remoto)
+-----------------------------------
+- Si se accede vía red, la latencia se suma al tiempo de inferencia, degradando la experiencia del usuario.
+
+.. _soluciones-ollama:
+
+Soluciones Recomendadas
+=======================
+- **Asignar más recursos**: Aumentar RAM, CPU y GPU (si aplica).
+- **Modelos más pequeños**: Usar Phi-2, TinyLlama o Mistral 7B para reducir consumo.
+- **Quantización**: Cargar modelos en 4-bit/8-bit para menor uso de memoria.
+- **Contenedores**: Docker/Kubernetes para aislar recursos.
+- **Balanceo de carga**: NGINX como proxy para distribuir solicitudes.
+
+Conclusión
+==========
+Ollama es ideal para prototipado, pero no para producción escalable. Alternativas recomendadas:
+
+- **Nube**: APIs de OpenAI, Gemini o Claude.
+- **Autoalojadas optimizadas**: vLLM o Text Generation Inference.
 
 
