@@ -20,8 +20,8 @@ Estructura Final del Proyecto
    ├── Dockerfile
    ├── requirements.txt
    ├── app.py
-   ├── static/      (opcional)
-   │   └── index.html
+   ├── index.html
+   ├── nginx.conf
    ├── uploads/   (creado automáticamente)
    ├── db/         (creado automáticamente)
    └── docs/
@@ -103,12 +103,27 @@ Crea un Dockerfile para tu aplicación:
    # Instalar dependencias Python
    COPY requirements.txt .
    RUN pip install --upgrade pip
-   RUN pip install --no-cache-dir -r requirements.txt
+   #RUN pip install --no-cache-dir -r requirements.txt
+   RUN pip install -r requirements.txt
    
    COPY . .
    
-   EXPOSE 8000
-   CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+   # Instalar un servidor web simple para servir el index.html
+   RUN apt-get update && apt-get install -y nginx && \
+       rm -rf /var/lib/apt/lists/* && \
+       mv index.html /var/www/html/
+   
+   # Configurar Nginx para servir la interfaz y redirigir API a FastAPI
+   COPY nginx.conf /etc/nginx/nginx.conf
+   
+   RUN chown -R www-data:www-data /var/www/html && \
+       chmod -R 755 /var/www/html
+   
+   # Puerto para FastAPI (8000) y para Nginx (80)
+   EXPOSE 8000 80
+   
+   #CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
 
 Crea un archivo requirements.txt:
 
@@ -128,7 +143,6 @@ Crea un archivo requirements.txt:
    chromadb
    ollama
 
-
 Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
 
 .. code-block:: python
@@ -136,26 +150,46 @@ Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
    from fastapi import FastAPI, UploadFile, File, HTTPException
    from fastapi.middleware.cors import CORSMiddleware
    import os
-   from typing import List
+   from typing import List, Optional
    from pydantic import BaseModel
    import ollama
-   # AÃ± estas importaciones al inicio del archivo
    from langchain.document_loaders import DirectoryLoader
    from langchain.text_splitter import RecursiveCharacterTextSplitter
    from langchain.embeddings import HuggingFaceEmbeddings
    from langchain.vectorstores import Chroma
-   from langchain.chains import RetrievalQA
    import os
    
    app = FastAPI()
    
+   # ConfiguraciÃ³ORS mÃ¡especÃ­ca
+   origins = [
+       "http://localhost",
+       "http://localhost:8000",
+       "http://127.0.0.1",
+       "http://127.0.0.1:8000",
+       "http://10.134.3.35",
+       "http://10.134.35:8000",
+       # Agrega aquÃ­ualquier otro origen que necesites permitir
+   ]
+   
    app.add_middleware(
        CORSMiddleware,
-       allow_origins=["*"],
+       allow_origins=origins,
        allow_credentials=True,
-       allow_methods=["*"],
-       allow_headers=["*"],
+       allow_methods=["*"],  # Permite todos los mÃ©dos
+       allow_headers=["*"],  # Permite todos los headers
    )
+   
+   @app.options("/ask")
+   async def options_ask():
+       return {"message": "OK"}
+   
+   @app.options("/upload")
+   async def options_upload():
+       return {"message": "OK"}
+   
+   class Question(BaseModel):
+       question: str
    
    class Question(BaseModel):
        question: str
@@ -177,7 +211,7 @@ Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
        return db
    
    # Modifica la funciÃ³pload_file
-   @app.post("/upload/")
+   @app.post("/upload")
    async def upload_file(file: UploadFile = File(...)):
        try:
            os.makedirs("uploads", exist_ok=True)
@@ -192,7 +226,7 @@ Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
            raise HTTPException(status_code=500, detail=str(e))
    
    # Modifica la funciÃ³sk_question para usar RAG
-   @app.post("/ask/")
+   @app.post("/ask")
    async def ask_question(question: Question):
        try:
            # Cargar la base de datos vectorial
