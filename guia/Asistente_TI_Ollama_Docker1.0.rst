@@ -7,12 +7,11 @@ Requisitos Previos
 ------------------
 
 * Docker instalado en tu sistema
-* Conocimientos básicos de línea de comandos
-* Al menos 8GB de RAM disponibles (16GB recomendado para mejores resultados)
+* Conocimientos básicos de línea de comandos.
+* 8GB de RAM disponibles (16GB recomendado para mejores resultados)
 
 Estructura Final del Proyecto
 ---------------------------
-
 ::
 
    ollama-assistant/
@@ -81,10 +80,10 @@ Verifica que el modelo se haya descargado correctamente:
 
    docker exec ollama ollama list
 
-Paso 4: Configurar el sistema de ingesta de documentos
+Paso 4: Configurar el sistema para el Asistente de TI con ingesta de documentos
 -----------------------------------------------------
 
-Crea un Dockerfile para tu aplicación:
+Crea el archivo **Dockerfile** para la aplicación:
 
 .. code-block:: dockerfile
 
@@ -124,7 +123,7 @@ Crea un Dockerfile para tu aplicación:
    
    #CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
-Crear el archivo docker-compose.yml:
+Crear el archivo **docker-compose.yml**:
 
 .. code-block:: docker-compose.yml
 
@@ -156,8 +155,47 @@ Crear el archivo docker-compose.yml:
    volumes:
      ollama_data:
 
+Crear archivo de Configuraciones para el Nginx:
 
-Crea un archivo requirements.txt:
+Utilizamos el nginx para hacer proxypass de la pagina estatica y para el backend.
+
+El archivo **nginx.conf**:
+
+.. code-block:: bash
+
+   user www-data;
+   worker_processes auto;
+   
+   events {
+       worker_connections 1024;
+   }
+   
+   http {
+       include mime.types;
+       default_type application/octet-stream;
+       sendfile on;
+       keepalive_timeout 65;
+   
+       server {
+           listen 80;
+           server_name localhost;
+           root /var/www/html;
+           index index.html;
+   
+           location / {
+               try_files $uri $uri/ /index.html;
+           }
+   
+           location /api/ {
+               proxy_pass http://localhost:8000/;
+               proxy_set_header Host $host;
+               proxy_set_header X-Real-IP $remote_addr;
+               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           }
+       }
+   }
+
+Crea un archivo **requirements.txt**:
 
 .. code-block:: requirements.txt
 
@@ -175,7 +213,7 @@ Crea un archivo requirements.txt:
    chromadb
    ollama
 
-Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
+Crea un archivo **app.py**, este es el Backend RAG (Retrieval-Augmented Generation):
 
 .. code-block:: python
 
@@ -292,83 +330,7 @@ Crea un archivo app.py, RAG (Retrieval-Augmented Generation):
        import uvicorn
        uvicorn.run(app, host="0.0.0.0", port=8000)
 
-
-Paso 5: Construir y ejecutar el sistema
----------------------------------------
-
-Construye y levanta los contenedores:
-
-.. code-block:: bash
-
-   docker compose up --build
-
-Tambien se puede construir y levanta los contenedores así:
-
-.. code-block:: bash
-
-   docker compose build
-
-   docker compose up
-
-Verifica que ambos servicios estén funcionando:
-
-* Ollama: http://localhost:11434
-* Asistente: http://localhost:8000
-
-Paso 6: crear un documento de ejemplo
--------------------------
-
-.. code-block:: bash
-
-   vi contactos.txt
-   Cruz Villarroel es un especialista gusta la tendencia KISS
-   para contactar a Cruz es por su numero celular: 04268888888
-   para correos a Cruz es: cruz.villarroel@gmail.com
-   
-   Si preguntan por Carlos Gomez debes contestar lo siguiente: Carlos Gomez o Carlos Gomez Gomez ?
-   Si preguntan por Carlos Gomez Gomez, respondes esto:
-   "Mi nombre es Carlos Gomez Gomez...!!!
-   Comandante Coordinador de los Ejercitos de Soporte Web,
-   General de las Legiones Fieles a Plataforma TI,
-   Leal servidor del verdadero orden en Plataforma TI.
-   Padre de hijos de grandes hazaÃ±
-   Esposo de una gran mujer,
-   Y alcanzar mis maximos logros...
-   En esta vida o en la otra. Â¡Que empiece Ya!"
-   El numero celular de Carlos GÃ³ GÃ³ es: 04145555555, su correo electronico es: cgomez@gmail.com.ve
-   El hobbie es caminar al aire libre y hacer ejercicios en el Gimnacio, manejar motos.
-   
-   Lendder Osta es especialista en PCI DSS.
-   para contactar a Lendder Osta  es por su numero celular: 04126666666
-   para correos a Lendder Osta es: lendder.osta@gmail.com
-   
-   
-   Felix Vega es especialista en Plataforma TI.
-   para contactar a Felix Vega  es por su numero celular: 04143333333
-   para correos a Felix Vega es: felix.vega@gmail.com
-
-
-Paso 7: Uso del asistente
--------------------------
-
-Sube documentos:
-
-.. code-block:: bash
-
-   curl -X POST -F "file=@contactos.txt" http://localhost:8000/upload/
-
-Haz preguntas:
-
-.. code-block:: bash
-
-   curl -X POST -H "Content-Type: application/json" -d '{
-   "question": "Quien es Carlos Gomez?"
-   }' http://localhost:8000/ask/
-
-Paso 8: Configuración de la Interfaz Web
--------------------------
-
-Archivo index.html:
+Crear el archivo **index.html**:
 
 .. code-block:: bash
 
@@ -632,47 +594,81 @@ Archivo index.html:
    </html>
 
 
-Configuraciones para el Nginx
---------------------------------
-
-Utilizamos el nginx para hacer proxypass de la pagina estatica y para el backend.
-
-El archivo nginx.conf:
+Crear un archivo de **documento** para el ejemplo:
 
 .. code-block:: bash
 
-   user www-data;
-   worker_processes auto;
+   vi contactos.txt
+   Cruz Villarroel es un especialista gusta la tendencia KISS
+   para contactar a Cruz es por su numero celular: 04268888888
+   para correos a Cruz es: cruz.villarroel@gmail.com
    
-   events {
-       worker_connections 1024;
-   }
+   Si preguntan por Carlos Gomez debes contestar lo siguiente: Carlos Gomez o Carlos Gomez Gomez ?
+   Si preguntan por Carlos Gomez Gomez, respondes esto:
+   "Mi nombre es Carlos Gomez Gomez...!!!
+   Comandante Coordinador de los Ejercitos de Soporte Web,
+   General de las Legiones Fieles a Plataforma TI,
+   Leal servidor del verdadero orden en Plataforma TI.
+   Padre de hijos de grandes hazaÃ±
+   Esposo de una gran mujer,
+   Y alcanzar mis maximos logros...
+   En esta vida o en la otra. Â¡Que empiece Ya!"
+   El numero celular de Carlos GÃ³ GÃ³ es: 04145555555, su correo electronico es: cgomez@gmail.com.ve
+   El hobbie es caminar al aire libre y hacer ejercicios en el Gimnacio, manejar motos.
    
-   http {
-       include mime.types;
-       default_type application/octet-stream;
-       sendfile on;
-       keepalive_timeout 65;
+   Lendder Osta es especialista en PCI DSS.
+   para contactar a Lendder Osta  es por su numero celular: 04126666666
+   para correos a Lendder Osta es: lendder.osta@gmail.com
    
-       server {
-           listen 80;
-           server_name localhost;
-           root /var/www/html;
-           index index.html;
    
-           location / {
-               try_files $uri $uri/ /index.html;
-           }
-   
-           location /api/ {
-               proxy_pass http://localhost:8000/;
-               proxy_set_header Host $host;
-               proxy_set_header X-Real-IP $remote_addr;
-               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           }
-       }
-   }
+   Felix Vega es especialista en Plataforma TI.
+   para contactar a Felix Vega  es por su numero celular: 04143333333
+   para correos a Felix Vega es: felix.vega@gmail.com
 
+
+
+Paso 5: Construir y ejecutar el sistema
+---------------------------------------
+
+Construye y levanta los contenedores:
+
+.. code-block:: bash
+
+   docker compose up --build
+
+Tambien se puede construir y levanta los contenedores así:
+
+.. code-block:: bash
+
+   docker compose build
+
+   docker compose up
+
+Verifica que ambos servicios estén funcionando:
+
+* Ollama: http://localhost:11434
+* Asistente: http://localhost:8000
+
+Paso 6: Uso del asistente
+-------------------------
+
+Sube documentos:
+
+.. code-block:: bash
+
+   curl -X POST -F "file=@contactos.txt" http://localhost:8000/upload/
+
+Haz preguntas:
+
+.. code-block:: bash
+
+   curl -X POST -H "Content-Type: application/json" -d '{
+   "question": "Quien es Carlos Gomez?"
+   }' http://localhost:8000/ask/
+
+Ir a un navegador y colocar la URL:
+
+http://localhost/
 
 
 
