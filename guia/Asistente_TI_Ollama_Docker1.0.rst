@@ -656,7 +656,7 @@ Sube documentos:
 
 .. code-block:: bash
 
-   curl -X POST -F "file=@contactos.txt" http://localhost:8000/upload/
+   curl -X POST -F "file=@contactos.txt" http://localhost:8000/upload
 
 Haz preguntas:
 
@@ -664,7 +664,7 @@ Haz preguntas:
 
    curl -X POST -H "Content-Type: application/json" -d '{
    "question": "Quien es Carlos Gomez?"
-   }' http://localhost:8000/ask/
+   }' http://localhost:8000/ask
 
 Ir a un navegador y colocar la URL:
 
