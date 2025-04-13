@@ -17,12 +17,12 @@ Paso 1: Crear estructura de directorios
 
 .. code-block:: bash
 
-  mkdir -p ~/ollama-docker/{models,uploads}
+  mkdir -p /ollama-docker/{models,uploads}
 
 Paso 2: Crear archivo docker-compose.yml
 ------------------------------------------
 
-Crea el archivo en ~/ollama-docker/docker-compose.yml con:
+Crea el archivo en ~ollama-docker/docker-compose.yml con:
 
 .. code-block:: bash
 
@@ -44,7 +44,7 @@ Paso 3: Iniciar el servicio
 
 .. code-block:: bash
 
-  cd ~/ollama-docker
+  cd /ollama-docker
   docker compose up -d
 
 Paso 4: Descargar un modelo
@@ -78,13 +78,28 @@ Acceder al contenedor interactivamente:
 
   docker exec -it ollama sh
 
-Dentro del contenedor, procesar archivos (ejemplo básico):
+Hay dos formas de que ollama aprenda, este es una: Esto creará un modelo personalizado que incluye tu archivo como parte de su contexto.
+
+.. code-block:: bash
+
+  # ollama create nombre-del-modelo -f Modfile
+  docker exec -it ollama-container create zabbix-assistant -f zabbix_context.md
+
+Alternativa: esta es la otra forma. Usar el archivo en tiempo real
+Si prefieres no crear un modelo personalizado, puedes pasar el archivo directamente en tu consulta:
+
+.. code-block:: bash
+
+  # ollama run llama3 "Resume este archivo:" --file datos.txt
+
+En este ejemplo, dentro del contenedor, procesar archivos (ejemplo básico):
 
 .. code-block:: bash
 
   for file in /uploads/*.md; do
-    ollama run llama2 "Aprende este contenido: $(cat $file)"
+    ollama run llama3 "Aprende este contenido: $(cat $file)"
   done
+
 
 Paso 7: Consultar el modelo
 ------------------------------
