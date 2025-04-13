@@ -68,7 +68,7 @@ Paso 6: Copiar tus archivos Markdown al contenedor
 
   cp /ruta/a/tus/archivos/*.md ~/ollama-docker/uploads/
 
-Paso 7: Ingrasar información al modelo de ollama
+Paso 7: Ingresar información al modelo de ollama
 ------------------------------------------------
 
 .. code-block:: python
