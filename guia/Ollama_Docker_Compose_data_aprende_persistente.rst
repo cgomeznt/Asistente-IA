@@ -74,10 +74,57 @@ Paso 6: Ingresar archivos manualmente al modelo
 
 Hay dos formas de que ollama aprenda, este es una: Esto creará un modelo personalizado que incluye tu archivo como parte de su contexto.
 
+Para crear el Modelo personalizado (en lo que se carguen más modelos, demandara más memoria). ollama carga los modelos en memoria:
+
+Esta es la estructura dentro del contenedor y recuerda que debe tener permisos de LECTURA (rwx,r--,r--)
+
+.. code-block:: bash
+
+/uploads/
+  ├── Modfile
+  └── contactos.txt  # Texto plano con datos simples
+
+
+Esta es la estructura del Host:
+
+.. code-block:: bash
+
+/ollama/uploads/
+  ├── Modfile
+  └── contactos.txt  # Texto plano con datos simples
+
+Crear el archivo /uploads/Modfile con este contenido:
+
+.. code-block:: bash
+
+  FROM llama3
+  SYSTEM """
+  Eres un asistente de contactos. Responde SOLO basado en el archivo adjunto.
+  CONTENIDO DEL ARCHIVO:
+  {{ .File "contactos.txt" }}
+  """
+  PARAMETER num_ctx 4096
+
+**NOTA:** Aumenta num_ctx en el Modfile si el archivo es grande.
+
+Para crear el modelo:
+
 .. code-block:: bash
 
   # ollama create nombre-del-modelo -f Modfile
-  docker exec -it ollama-container create zabbix-assistant -f zabbix_context.md
+  docker exec -it ollama ollama create mis-contactos -f /uploads/Modfile
+
+Para probar el modelo:
+
+.. code-block:: bash
+
+  docker exec -it ollama ollama run mis-contactos "Dame el teléfono de Ana"
+
+Para listar todos los modelos
+
+.. code-block:: bash
+
+  docker exec -it ollama ollama list
 
 Alternativa: esta es la otra forma. Usar el archivo en tiempo real
 Si prefieres no crear un modelo personalizado, puedes pasar el archivo directamente en tu consulta:
