@@ -128,18 +128,35 @@ Para listar todos los modelos
 
   docker exec -it ollama ollama list
 
-Este es otro ejemplo de un archivo Model
+Este es otro ejemplo de un archivo Modfile
 
 .. code-block:: bash
 
   FROM llama3
   SYSTEM """
-  Eres un experto en los contactos. Responde solo basado en el archivo adjunto.
-  Si la pregunta no está relacionada con los contactos o no hay datos, di: 'No tengo información sobre eso'.
-  CONTENIDO DEL ARCHIVO:
-  {{ .File "contactos.txt" }}
+  ### INSTRUCCIONES ESTRICTAS ###
+  1. SOLO puedes responder con los datos del archivo adjunto.
+  2. Si no hay datos, di: "No tengo informaciï¿½n".
+  3. NUNCA inventes respuestas.
+  
+  ### CONTENIDO DEL ARCHIVO ###
+  Nombre: Carlos, Telefono: 123456789, Email: carlos@example.com
+  Nombre: Ana, Telefono: 987654321, Email: ana@example.com
+  Nombre: Luis, Telefono: 5551234567
   """
-  PARAMETER num_ctx 4096
+  PARAMETER num_ctx 2048
+
+Este es el contenido del archivo contenido.txt:
+
+.. code-block:: bash
+
+  Nombre: Carlos, Telefono: 123456789, Email: carlos@example.com
+  Nombre: Ana, Telefono: 987654321, Email: ana@example.com
+  Nombre: Luis, Telefono: 5551234567
+
+El contenido se inyecta DIRECTAMENTE en el prompt del sistema usando $(cat /uploads/contactos.txt).
+
+Eliminamos la dependencia de {{ .File }} que no estaba funcionando.
 
 AL cargar el Modelo, queda persistente y aunque reinicies el contenedor o el Host, se tendrá la información del modelo cargado.
 
