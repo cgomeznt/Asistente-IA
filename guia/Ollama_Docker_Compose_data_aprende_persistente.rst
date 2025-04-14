@@ -72,12 +72,6 @@ Paso 5: Copiar tus archivos Markdown
 Paso 6: Ingresar archivos manualmente al modelo
 ----------------------------------------------
 
-Acceder al contenedor interactivamente:
-
-.. code-block:: bash
-
-  docker exec -it ollama sh
-
 Hay dos formas de que ollama aprenda, este es una: Esto creará un modelo personalizado que incluye tu archivo como parte de su contexto.
 
 .. code-block:: bash
@@ -93,7 +87,11 @@ Si prefieres no crear un modelo personalizado, puedes pasar el archivo directame
   # ollama run llama3 "Resume este archivo:" --file datos.txt
 
 En este ejemplo, dentro del contenedor, procesar archivos (ejemplo básico):
+Acceder al contenedor interactivamente:
 
+.. code-block:: bash
+
+  docker exec -it ollama sh
 .. code-block:: bash
 
   for file in /uploads/*.md; do
