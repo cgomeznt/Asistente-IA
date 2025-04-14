@@ -119,12 +119,29 @@ Para probar el modelo:
 .. code-block:: bash
 
   docker exec -it ollama ollama run mis-contactos "Dame el teléfono de Ana"
+  # ó
+  docker exec -it ollama ollama run mis-contactos "Dame el teléfono de Carlos"
 
 Para listar todos los modelos
 
 .. code-block:: bash
 
   docker exec -it ollama ollama list
+
+Este es otro ejemplo de un archivo Model
+
+.. code-block:: bash
+
+  FROM llama3
+  SYSTEM """
+  Eres un experto en los contactos. Responde solo basado en el archivo adjunto.
+Si la pregunta no está relacionada con los contactos o no hay datos, di: 'No tengo información sobre eso'.
+  CONTENIDO DEL ARCHIVO:
+  {{ .File "contactos.txt" }}
+  """
+  PARAMETER num_ctx 4096
+
+AL cargar el Modelo, queda persistente y aunque reinicies el contenedor o el Host, se tendrá la información del modelo cargado.
 
 Alternativa: esta es la otra forma. Usar el archivo en tiempo real
 Si prefieres no crear un modelo personalizado, puedes pasar el archivo directamente en tu consulta:
