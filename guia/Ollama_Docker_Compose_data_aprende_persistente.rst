@@ -154,6 +154,17 @@ Eliminamos la dependencia de {{ .File }} que no estaba funcionando.
 
 AL cargar el Modelo, queda persistente y aunque reinicies el contenedor o el Host, se tendrá la información del modelo cargado.
 
+Hacemos varias preguntas para certificar:
+
+.. code-block:: bash
+
+  docker exec -it ollama ollama run Mis-Contactos """
+  Repite TODO el contenido del archivo 'contactos.txt' SIN modificaciones."""
+
+  docker exec -it ollama ollama run Mis-Contactos """Dame el telefono de Ana y el telefono de Carlos"""
+
+  docker exec -it ollama ollama run Mis-Contactos """Por favor el correo de carlos y su telefono, tambien dime los datos que tenga ana?"""
+
 
 Este es otro ejemplo de un archivo Modfile
 
