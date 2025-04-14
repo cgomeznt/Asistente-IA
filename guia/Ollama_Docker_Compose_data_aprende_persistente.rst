@@ -80,18 +80,18 @@ Esta es la estructura dentro del contenedor y recuerda que debe tener permisos d
 
 .. code-block:: bash
 
-/uploads/
-  ├── Modfile
-  └── contactos.txt  # Texto plano con datos simples
+  /uploads/
+    ├── Modfile
+    └── contactos.txt  # Texto plano con datos simples
 
 
 Esta es la estructura del Host:
 
 .. code-block:: bash
 
-/ollama/uploads/
-  ├── Modfile
-  └── contactos.txt  # Texto plano con datos simples
+  /ollama/uploads/
+    ├── Modfile
+    └── contactos.txt  # Texto plano con datos simples
 
 Crear el archivo /uploads/Modfile con este contenido:
 
