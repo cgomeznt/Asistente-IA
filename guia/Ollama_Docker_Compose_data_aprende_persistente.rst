@@ -166,7 +166,7 @@ Hacemos varias preguntas para certificar:
   docker exec -it ollama ollama run Mis-Contactos """Por favor el correo de carlos y su telefono, tambien dime los datos que tenga ana?"""
 
 
-Este es otro ejemplo de un archivo Modfile
+Este es otro ejemplo de un archivo Modelo. (No lo he utilizado)
 
 Alternativa: esta es la otra forma. Usar el archivo en tiempo real
 Si prefieres no crear un modelo personalizado, puedes pasar el archivo directamente en tu consulta:
