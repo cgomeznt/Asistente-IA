@@ -148,7 +148,7 @@ Este es el contenido del archivo contenido.txt:
   Nombre: Ana, Telefono: 987654321, Email: ana@example.com
   Nombre: Luis, Telefono: 5551234567
 
-El contenido se inyecta DIRECTAMENTE en el prompt del sistema usando $(cat /uploads/contactos.txt).
+El contenido se inyecta DIRECTAMENTE en el prompt del sistema en el archivo Modfile.
 
 Eliminamos la dependencia de {{ .File }} que no estaba funcionando.
 
