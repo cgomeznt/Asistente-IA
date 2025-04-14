@@ -99,11 +99,17 @@ Crear el archivo /uploads/Modfile con este contenido:
 
   FROM llama3
   SYSTEM """
-  Eres un asistente de contactos. Responde SOLO basado en el archivo adjunto.
-  CONTENIDO DEL ARCHIVO:
-  {{ .File "contactos.txt" }}
+  ### INSTRUCCIONES ESTRICTAS ###
+  1. SOLO puedes responder con los datos del archivo adjunto.
+  2. Si no hay datos, di: "No tengo informaciï¿½n".
+  3. NUNCA inventes respuestas.
+  
+  ### CONTENIDO DEL ARCHIVO ###
+  Nombre: Carlos, Telefono: 123456789, Email: carlos@example.com
+  Nombre: Ana, Telefono: 987654321, Email: ana@example.com
+  Nombre: Luis, Telefono: 5551234567
   """
-  PARAMETER num_ctx 4096
+  PARAMETER num_ctx 2048
 
 **NOTA:** Aumenta num_ctx en el Modfile si el archivo es grande.
 
@@ -113,6 +119,12 @@ Para crear el modelo:
 
   # ollama create nombre-del-modelo -f Modfile
   docker exec -it ollama ollama create mis-contactos -f /uploads/Modfile
+
+Para crear eliminar el modelo:
+
+.. code-block:: bash
+
+  docker exec -it ollama ollama rm mis-contactos 
 
 Para probar el modelo:
 
@@ -128,24 +140,6 @@ Para listar todos los modelos
 
   docker exec -it ollama ollama list
 
-Este es otro ejemplo de un archivo Modfile
-
-.. code-block:: bash
-
-  FROM llama3
-  SYSTEM """
-  ### INSTRUCCIONES ESTRICTAS ###
-  1. SOLO puedes responder con los datos del archivo adjunto.
-  2. Si no hay datos, di: "No tengo informaciï¿½n".
-  3. NUNCA inventes respuestas.
-  
-  ### CONTENIDO DEL ARCHIVO ###
-  Nombre: Carlos, Telefono: 123456789, Email: carlos@example.com
-  Nombre: Ana, Telefono: 987654321, Email: ana@example.com
-  Nombre: Luis, Telefono: 5551234567
-  """
-  PARAMETER num_ctx 2048
-
 Este es el contenido del archivo contenido.txt:
 
 .. code-block:: bash
@@ -159,6 +153,9 @@ El contenido se inyecta DIRECTAMENTE en el prompt del sistema usando $(cat /uplo
 Eliminamos la dependencia de {{ .File }} que no estaba funcionando.
 
 AL cargar el Modelo, queda persistente y aunque reinicies el contenedor o el Host, se tendrá la información del modelo cargado.
+
+
+Este es otro ejemplo de un archivo Modfile
 
 Alternativa: esta es la otra forma. Usar el archivo en tiempo real
 Si prefieres no crear un modelo personalizado, puedes pasar el archivo directamente en tu consulta:
