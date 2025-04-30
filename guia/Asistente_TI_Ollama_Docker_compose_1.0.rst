@@ -346,6 +346,264 @@ Crear el archivo **index.html**:
 
 .. code-block:: bash
 
+   <!DOCTYPE html>
+   <html lang="es">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Asistente de TI con Ollama</title>
+       <style>
+           body {
+               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+               line-height: 1.6;
+               margin: 0;
+               padding: 20px;
+               background-color: #f5f5f5;
+               color: #333;
+           }
+           .container {
+               max-width: 900px;
+               margin: 0 auto;
+               background: white;
+               padding: 20px;
+               border-radius: 8px;
+               box-shadow: 0 0 10px rgba(0,0,0,0.1);
+           }
+           h1 {
+               color: #2c3e50;
+               text-align: center;
+           }
+           .section {
+               margin-bottom: 30px;
+               padding: 20px;
+               border: 1px solid #ddd;
+               border-radius: 5px;
+           }
+           .section-title {
+               margin-top: 0;
+               color: #3498db;
+           }
+           textarea, input[type="text"], input[type="file"] {
+               width: 100%;
+               padding: 10px;
+               margin-bottom: 10px;
+               border: 1px solid #ddd;
+               border-radius: 4px;
+               box-sizing: border-box;
+           }
+           button {
+               background-color: #3498db;
+               color: white;
+               border: none;
+               padding: 10px 15px;
+               border-radius: 4px;
+               cursor: pointer;
+               font-size: 16px;
+           }
+           button:hover {
+               background-color: #2980b9;
+           }
+           #response {
+               margin-top: 20px;
+               padding: 15px;
+               background-color: #f9f9f9;
+               border-radius: 4px;
+               min-height: 100px;
+               white-space: pre-wrap;
+           }
+           .file-info {
+               margin-top: 10px;
+               font-size: 14px;
+               color: #555;
+           }
+           .tab {
+               overflow: hidden;
+               border: 1px solid #ccc;
+               background-color: #f1f1f1;
+               border-radius: 4px 4px 0 0;
+           }
+           .tab button {
+               background-color: inherit;
+               float: left;
+               border: none;
+               outline: none;
+               cursor: pointer;
+               padding: 14px 16px;
+               transition: 0.3s;
+               color: #333;
+           }
+           .tab button:hover {
+               background-color: #ddd;
+           }
+           .tab button.active {
+               background-color: #3498db;
+               color: white;
+           }
+           .tabcontent {
+               display: none;
+               padding: 20px;
+               border: 1px solid #ccc;
+               border-top: none;
+               border-radius: 0 0 4px 4px;
+           }
+           .active-tab {
+               display: block;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="container">
+           <h1>Asistente de TI con Ollama</h1>
+   
+           <div class="tab">
+               <button class="tablinks active" onclick="openTab(event, 'queryTab')">Consultar</button>
+               <button class="tablinks" onclick="openTab(event, 'uploadTab')">Subir Documentos</button>
+           </div>
+   
+           <!-- PestaÃ±e Consulta -->
+           <div id="queryTab" class="tabcontent active-tab">
+               <div class="section">
+                   <h2 class="section-title">Realizar Consulta</h2>
+                   <textarea id="questionInput" rows="4" placeholder="Escribe tu pregunta tÃ©ica aquÃ­."></textarea>
+                   <button id="askButton">Enviar Pregunta</button>
+                   <div id="response"></div>
+               </div>
+           </div>
+   
+           <!-- PestaÃ±e Subida de Archivos -->
+           <div id="uploadTab" class="tabcontent">
+               <div class="section">
+                   <h2 class="section-title">Subir Documentos TÃ©icos</h2>
+                   <input type="file" id="fileInput" multiple>
+                   <button onclick="uploadFile()">Subir Archivo</button>
+                   <div class="file-info" id="fileInfo"></div>
+               </div>
+           </div>
+       </div>
+   
+       <script>
+           // FunciÃ³ara cambiar entre pestaÃ±        f
+   
+               function openTab(evt, tabName) {
+               var i, tabcontent, tablinks;
+   
+               tabcontent = document.getElementsByClassName("tabcontent");
+               for (i = 0; i < tabcontent.length; i++) {
+                   tabcontent[i].classList.remove("active-tab");
+               }
+   
+               tablinks = document.getElementsByClassName("tablinks");
+               for (i = 0; i < tablinks.length; i++) {
+                   tablinks[i].className = tablinks[i].className.replace(" active", "");
+               }
+   
+               document.getElementById(tabName).classList.add("active-tab");
+               evt.currentTarget.className += " active";
+               }
+   
+           // FunciÃ³ara enviar pregunta al backend
+           async function askQuestion() {
+               const question = document.getElementById('questionInput').value;
+               const responseDiv = document.getElementById('response');
+   
+               if (!question) {
+                   responseDiv.innerHTML = "Por favor, escribe una pregunta.";
+                   return;
+               }
+   
+               responseDiv.innerHTML = "Procesando tu pregunta...";
+   
+               try {
+                   const response = await fetch('http://localhost:8000/ask', {
+                       method: 'POST',
+                       headers: {
+                           'Content-Type': 'application/json',
+                       },
+                       body: JSON.stringify({ question: question })
+                   });
+   
+                   if (!response.ok) {
+                       throw new Error(`Error: ${response.status}`);
+                   }
+   
+                   const data = await response.json();
+                   responseDiv.innerHTML = data.answer;
+               } catch (error) {
+                   responseDiv.innerHTML = `Error: ${error.message}`;
+               }
+           }
+   
+           // FunciÃ³ara subir archivos
+           async function uploadFile() {
+               const fileInput = document.getElementById('fileInput');
+               const fileInfoDiv = document.getElementById('fileInfo');
+   
+               if (fileInput.files.length === 0) {
+                   fileInfoDiv.innerHTML = "Por favor, selecciona al menos un archivo.";
+                   return;
+               }
+   
+               fileInfoDiv.innerHTML = "Subiendo archivos...";
+   
+               try {
+                   const formData = new FormData();
+                   for (let i = 0; i < fileInput.files.length; i++) {
+                       formData.append('file', fileInput.files[i]);
+                   }
+   
+                   const response = await fetch('http://10.134.4.13:8000/upload', {
+                       method: 'POST',
+                       body: formData
+                   });
+   
+                   if (!response.ok) {
+                       throw new Error(`Error: ${response.status}`);
+                   }
+   
+                   const data = await response.json();
+                   fileInfoDiv.innerHTML = `Archivo(s) subido(s) exitosamente: ${data.filename || 'Varios archivos'}`;
+   
+                   // Limpiar el input de archivos
+                   fileInput.value = '';
+               } catch (error) {
+                   fileInfoDiv.innerHTML = `Error: ${error.message}`;
+               }
+           }
+       </script>
+   <script>
+       document.getElementById('askButton').addEventListener('click', async function() {
+           const question = document.getElementById('questionInput').value;
+           const responseDiv = document.getElementById('response');
+   
+           if (!question) {
+               responseDiv.innerHTML = "Por favor, escribe una pregunta.";
+               return;
+           }
+   
+           responseDiv.innerHTML = "Procesando tu pregunta...";
+   
+           try {
+              const response = await fetch('http://10.134.4.13:8000/ask', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ question: question })
+               });
+   
+               if (!response.ok) {
+                   throw new Error(`Error: ${response.status}`);
+               }
+   
+               const data = await response.json();
+               responseDiv.innerHTML = data.answer;
+           } catch (error) {
+               responseDiv.innerHTML = `Error: ${error.message}`;
+           }
+       });
+   </script>
+   </body>
+   </html>
 
 
 
