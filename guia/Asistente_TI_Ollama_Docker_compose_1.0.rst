@@ -53,6 +53,8 @@ Crea una carpeta para tu proyecto:
 
    mkdir ollama-assistant && cd ollama-assistant
 
+   mkdir db uploads docs
+
 Paso 2: Configuración de Ollama en Docker
 -----------------------------------------
 
