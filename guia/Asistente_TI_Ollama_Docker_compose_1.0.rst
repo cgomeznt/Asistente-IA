@@ -131,7 +131,7 @@ Crea el archivo **Dockerfile** para la aplicación:
     # Puerto para FastAPI (8000) y para Nginx (80)
     EXPOSE 8000 80
     
-    CMD ["sh", "-c", "nginx && uvicorn app:app --host 0.0.0.0 --port 8000"
+    CMD ["sh", "-c", "nginx && uvicorn app:app --host 0.0.0.0 --port 8000"]
 
 Crear el archivo **docker-compose.yml**:
 
