@@ -95,7 +95,12 @@ Verifica que el modelo se haya descargado correctamente:
 
    docker exec ollama ollama list
 
+Si vemos el llama3 instalado detenemos el contenedor y continuamos con las otras configuraciones:
+
+.. code-block:: bash
+
    docker stop ollama
+
 
 Paso 4: Configurar el sistema para el Asistente de TI con ingesta de documentos
 -----------------------------------------------------
