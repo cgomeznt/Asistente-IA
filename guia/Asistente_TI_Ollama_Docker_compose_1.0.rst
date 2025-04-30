@@ -55,6 +55,8 @@ Crea una carpeta para tu proyecto:
 
    mkdir db uploads docs
 
+   chmod 755 db uploads docs
+
 Paso 2: Configuración de Ollama en Docker
 -----------------------------------------
 
@@ -92,6 +94,8 @@ Verifica que el modelo se haya descargado correctamente:
 .. code-block:: bash
 
    docker exec ollama ollama list
+
+   docker stop ollama
 
 Paso 4: Configurar el sistema para el Asistente de TI con ingesta de documentos
 -----------------------------------------------------
